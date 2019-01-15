@@ -1,0 +1,27 @@
+{% extends 'bootstrap/base.html' %}
+{% block title %}
+Solar
+{% endblock %}
+
+{% block head%}
+{{super()}}
+  <title>Solar</title>
+</head>
+{% endblock %}
+
+{% block styles %}
+{{super()}}
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
+{% endblock %}
+
+{% block content %}
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info" role="alert">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+{% block app_content %}{% endblock %}
+
+{% endblock %}
