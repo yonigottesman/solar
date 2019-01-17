@@ -54,8 +54,8 @@ def update_deltas(body):
     from app.models import Body, Delta
     from app import db
     utc_now = datetime.utcnow()
-    utc_future = utc_now+timedelta(hours=1)
-    deltas = get_spac_deltas(499, utc_now.strftime("%Y-%b-%d %H:%M"),
+    utc_future = utc_now+timedelta(hours=2)
+    deltas = get_spac_deltas(body.horizon_id, utc_now.strftime("%Y-%b-%d %H:%M"),
                              utc_future.strftime("%Y-%b-%d %H:%M"))
     
     current = body.deltas.all()

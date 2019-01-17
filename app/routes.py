@@ -14,11 +14,13 @@ def index():
                  .filter(Delta.time >= datetime.utcnow()-timedelta(minutes=2))\
                  .order_by(Delta.time.asc())[0:60]
 
+    deltas_for_js = [{'time': d.time.strftime("%Y-%-m-%d %-H:%-M"),
+                      'au': float("{0:.2f}".format(d.au*149597870700 / 1000))}
+                     for d in deltas]
+
     return render_template('index.html',
                            body=body,
-                           deltas=[{'time': d.time.strftime("%Y-%-m-%d %-H:%-M"),
-                                    'au': "{0:.2f}".format(d.au*149597870700 / 1000)}
-                                   for d in deltas])
+                           deltas=deltas_for_js)
 
 
 def choose_random_body():
