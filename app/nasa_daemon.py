@@ -29,10 +29,10 @@ def get_spac_deltas(body_id, start_date, end_date):
     matam_coordinates = b'34.959351,32.789973,0\n'
     tn.write(matam_coordinates)
 
-    tn.read_until(b'Starting UT  [>=   1600-Jan-01 00:00] :')
+    tn.read_until(b'] :')
     tn.write(str.encode(str(start_date)+'\n'))
 
-    tn.read_until(b'Ending   UT  [<=   2500-Jan-03 23:58] :')
+    tn.read_until(b'] :')
     tn.write(str.encode(str(end_date)+'\n'))
 
     tn.read_until(b'Output interval [ex: 10m, 1h, 1d, ? ] :')

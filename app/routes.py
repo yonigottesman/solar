@@ -4,6 +4,9 @@ from flask import render_template, flash, redirect, url_for
 from datetime import datetime, timedelta
 from flask import send_from_directory
 import os
+import random
+
+
 @app.route('/')
 @app.route('/index')
 def index():
@@ -24,11 +27,12 @@ def index():
 
 
 def choose_random_body():
-    body = Body.query.filter_by(name='Mars').all()[0]
+    body = random.choice(Body.query.all())
     return body
 
 
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
-                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
+                               'favicon.ico',
+                               mimetype='image/vnd.microsoft.icon')

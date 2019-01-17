@@ -6,6 +6,9 @@ from app import db
 
 def get_spac_deltas(body_id, start_date, end_date):
 
+    print(start_date)
+    print(end_date)
+    
     HOST = 'horizons.jpl.nasa.gov'
     PORT = 6775
     tn = telnetlib.Telnet(HOST, PORT)
@@ -29,10 +32,10 @@ def get_spac_deltas(body_id, start_date, end_date):
     matam_coordinates = b'34.959351,32.789973,0\n'
     tn.write(matam_coordinates)
 
-    tn.read_until(b'Starting UT  [>=   1600-Jan-01 00:00] :')
+    tn.read_until(b'] :')
     tn.write(str.encode(str(start_date)+'\n'))
 
-    tn.read_until(b'Ending   UT  [<=   2500-Jan-03 23:58] :')
+    tn.read_until(b'] :')
     tn.write(str.encode(str(end_date)+'\n'))
 
     tn.read_until(b'Output interval [ex: 10m, 1h, 1d, ? ] :')
@@ -44,7 +47,7 @@ def get_spac_deltas(body_id, start_date, end_date):
     tn.read_until(b'Select table quantities [ <#,#..>, ?] :')
     tn.write(b'20\n')
 
-    tn.read_until(b'$$SOE')
+    print(tn.read_until(b'$$SOE').decode('ascii'))
     ret = tn.read_until(b'$$EOE').decode('ascii')
     print(ret)
     return ret
@@ -52,25 +55,25 @@ def get_spac_deltas(body_id, start_date, end_date):
 def update_deltas(body):
     utc_now = datetime.utcnow()
     utc_future = utc_now+timedelta(hours=1)
-    deltas = get_spac_deltas(499, utc_now.strftime("%Y-%b-%d %H:%M"),
+    deltas = get_spac_deltas(199, utc_now.strftime("%Y-%b-%d %H:%M"),
                              utc_future.strftime("%Y-%b-%d %H:%M"))
-    for delta in deltas.split('\n'):
-        line = delta.split()
-        if len(line) == 5:
-            date = datetime.strptime(line[0]+' ' + line[1], '%Y-%b-%d %H:%M')
-            au = line[3]
-            delta = Delta(time=date, au=au, body=body)
-            db.session.add(delta)
-    db.session.commit()
+    # for delta in deltas.split('\n'):
+    #     line = delta.split()
+    #     if len(line) == 5:
+    #         date = datetime.strptime(line[0]+' ' + line[1], '%Y-%b-%d %H:%M')
+    #         au = line[3]
+    #         delta = Delta(time=date, au=au, body=body)
+    #         db.session.add(delta)
+    # db.session.commit()
 
-    # now delete older values
-    Delta.query.filter(Delta.time < datetime.utcnow()).delete()
-    db.session.commit()
+    # # now delete older values
+    # Delta.query.filter(Delta.time < datetime.utcnow()).delete()
+    # db.session.commit()
 
 
 def tick():
-    body = Body.query.filter_by(name='Mars').all()[0]
-    update_deltas(body)
+    # body = Body.query.filter_by(name='Mars').all()[0]
+    update_deltas(0)
 
 
 tick()
