@@ -21,17 +21,70 @@
 
 {% block scripts %}
 <script type=text/javascript>
+    
+  function find_index(deltas, utc_now){
+      start_index = -1
+      for (var i = 0; i < deltas.length; i++){
+          if (deltas[i].time == utc_now){
+              return i
+          }
+      }
+      return -1
+  }
 
-var deltas = {{deltas|tojson|safe}}
-var i = 0
-window.setInterval(function(){
-  $('#delta').text(deltas[i].delta + "[km]")
-  i = i+1
-}, 1000);
-  
-alert(new Date().getTime());
+  function get_date_string() {
+      var now = new Date()
+      var utc_now = now.getUTCFullYear().toString()
+          + '-'+ (now.getUTCMonth()+1).toString()
+          + '-'+ now.getUTCDate().toString()
+          + ' '+ now.getUTCHours().toString()
+          + ':'+ now.getUTCMinutes().toString()
+      return utc_now
+  }
 
-  
+  function numberWithCommas(x) {
+      // This magic was taken from here:
+      // https://stackoverflow.com/questions/2901102/how-to-print-a-number-with-commas-as-thousands-separators-in-javascript
+      // TODO: understand it :/
+      return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+  }
+
+  var deltas = {{deltas|tojson|safe}}
+
+  var first = 1
+  var minutes_on_page = 0
+  window.setInterval(function(){
+      var now_sec = new Date().getUTCSeconds()
+      if (first == 1 || now_sec < 2) {
+          first = 0
+          counter = 0
+          utc_now = get_date_string()
+          find_index(deltas, utc_now)
+
+          
+          now_index = find_index(deltas, utc_now)
+          now_au = deltas[now_index].au
+          in_a_minute_au = deltas[now_index + 1].au
+          
+          km_sec = (in_a_minute_au - now_au)/60
+
+          minutes_on_page = minutes_on_page + 1
+          if (minutes_on_page >= 10) {
+              location.reload(true)
+          }      
+          // console.log(utc_now + ' ' + deltas[now_index].time);
+          // console.log(now_au + ' ' + in_a_minute_au)
+
+      }
+
+      // console.log((km_sec*now_sec + parseFloat(deltas[now_index].au, 10)).toFixed(2));
+      var dist = (km_sec*now_sec + parseFloat(deltas[now_index].au, 10)).toFixed(2)
+
+      $('#delta').text(numberWithCommas(dist) + "[km]")
+
+  }, 1000);
+
+
 </script>
 {{super()}}
 {% endblock %}

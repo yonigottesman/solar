@@ -10,13 +10,9 @@ app = Flask(__name__)
 app.config.from_object(Config)
 bootstrap = Bootstrap(app)
 scheduler = BackgroundScheduler()
-scheduler.add_job(nasa_daemon.tick, 'interval', seconds=20)
+scheduler.add_job(nasa_daemon.tick, 'interval', seconds=60)
 scheduler.start()
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
-
-
-
-
 
 from app import routes
