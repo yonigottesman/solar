@@ -1,1 +1,1 @@
-web: gunicorn solar:app
+web: flask db upgrade; gunicorn solar:app
